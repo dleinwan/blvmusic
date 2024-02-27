@@ -1,0 +1,10 @@
+.DS_Store
+.vscode/
+*.wav
+*.log
+*.mp3
+*.mid
+*.png
+clips/
+output_audio/
+*.pyc
