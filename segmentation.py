@@ -44,17 +44,19 @@ def create_folder(file_path):
         print(f"Folder '{output_folder_name}' created.")
     else:
         print(f"Folder '{output_folder_name}' already exists.")
-    return output_folder_name, os.path.basename(file_path)
+    output_folder_path = "./" + output_folder_name
+    return output_folder_name, output_folder_path
 
-def convert_midi_to_wav(midi_file, output_folder):
+def convert_midi_to_wav(midi_file):
+    file_name, folder_path = create_folder(midi_file)
     # Construct the output file path by replacing the MIDI extension with WAV extension
     wav_file = os.path.splitext(os.path.basename(midi_file))[0] + ".wav"
-    output_file = os.path.join(output_folder, wav_file)
+    output_file = os.path.join(file_name, wav_file)
     
     # Convert MIDI to WAV using fluidsynth
     subprocess.call(["fluidsynth", "-ni", "/path/to/soundfont.sf2", midi_file, "-F", output_file])
 
-def convert_folder_of_midi_to_wav(folder_path, output_folder):
+def convert_folder_of_midi_to_wav(folder_path):
     """
     Converts all MIDI files in a folder to WAV files.
     
@@ -67,4 +69,4 @@ def convert_folder_of_midi_to_wav(folder_path, output_folder):
         file_path = os.path.join(folder_path, file_name)
         if file_name.lower().endswith('.mid') or file_name.lower().endswith('.midi'):
             # Convert MIDI file to WAV
-            convert_midi_to_wav(file_path, output_folder)
+            convert_midi_to_wav(file_path)
