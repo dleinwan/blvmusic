@@ -82,18 +82,18 @@ class Note:
         output_audio_file_name = "./output_audio/" + self.name + ".wav"
         output_audio.export(output_audio_file_name, format="wav", bitrate=44100)
 
-    def play(self):
-        print('play function')
-        name_folder_path = './clips/pitches/'
-        files = [file for file in os.listdir(name_folder_path) if file[0] != '.']
+    # def play(self):
+    #     print('play function')
+    #     name_folder_path = './clips/pitches/'
+    #     files = [file for file in os.listdir(name_folder_path) if file[0] != '.']
 
-        for file in [file for file in files if '.wav' in file]:
-            print('Searching: ' + file)
-            if file == self.name + '.wav':
-                fs, x = wavfile.read(name_folder_path + file)
-                print(name_folder_path + file)
-                Audio(name_folder_path + file)
-                print('playing')
+    #     for file in [file for file in files if '.wav' in file]:
+    #         print('Searching: ' + file)
+    #         if file == self.name + '.wav':
+    #             fs, x = wavfile.read(name_folder_path + file)
+    #             print(name_folder_path + file)
+    #             Audio(name_folder_path + file)
+    #             print('playing')
 
 
 class Codebook:
