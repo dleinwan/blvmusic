@@ -5,6 +5,7 @@
 *.log
 *.mp3
 *.mid
+!mary.mid
 *.png
 clips/
 output_audio/
