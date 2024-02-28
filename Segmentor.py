@@ -80,7 +80,7 @@ class Segmentor:
             # if len(segment) == segment_length:
             self.segments.append(segment)
         # self.show_segments_as_midi()
-        print(self.convert_to_note_names())
+        self.convert_to_note_names()
         return self.segments
 
     def analyze_for_best_sectioning(self, iter_range):
@@ -105,7 +105,7 @@ class Segmentor:
                         print("For " + str(i) + " note segments, there are only " + str(len(segments)) + " segments.")
                 dict_key = str(i) + "notes"
                 self.segment_similarity_dictionary[dict_key] = similarity / (i)
-                print("Similarity for " + str(i) + " notes at a time:" + str(similarity))
+                # print("Similarity for " + str(i) + " notes at a time:" + str(similarity))
 
         print("Similarity dictionary: ")
         print(self.segment_similarity_dictionary)
