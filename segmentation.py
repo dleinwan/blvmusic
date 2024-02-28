@@ -5,12 +5,6 @@ from music21.converter.subConverters import ConverterMusicXML
 import os
 import subprocess
 
-# music21 configuration stuff
-# %config InlineBackend.figure_format = 'svg'
-musescore_path = "/Applications/MuseScore 4.app/Contents/MacOS/mscore"
-environment.set("musescoreDirectPNGPath", musescore_path)
-environment.set("musicxmlPath", musescore_path)
-
 def parse_midi(file_path):
     midi = converter.parse(file_path)
     notes_to_parse = midi.flat.notes

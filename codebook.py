@@ -1,3 +1,4 @@
+# Codebook and Note classes
 # CLASS Codebook contains self.codes which is a LIST of CLASS Notes which self populates with codes.csv 
 # codes.csv contains note and fingering information, as well as enharmonic information, octave, etc. 
 
@@ -5,8 +6,6 @@ from matplotlib import pyplot as plt
 import csv
 import os
 from scipy.io import wavfile
-from playsound import playsound
-from IPython.display import Audio
 from pydub import AudioSegment
 class Note:
 
@@ -96,7 +95,6 @@ class Note:
                 Audio(name_folder_path + file)
                 print('playing')
 
-        
 class Codebook:
 
     def __init__(self, file_path_to_csv):
