@@ -11,6 +11,7 @@ class Segmentor:
     def __init__(self, midi_file_path):
         self.best_num = 0
         self.segments = []
+        self.segment_similarity_dictionary = {}
 
         # prepare midi for manipulation
         self.midi_path = midi_file_path
@@ -87,6 +88,7 @@ class Segmentor:
         self.best_num = 0
         for i in range(1, iter_range):
             segments = self.segment(i)
+            print("i: " + str(i))
             # print(repeat.RepeatFinder(segments).getSimilarMeasureGroups())
             # skip if first iteration since nothing to compare it to
             if i==1: 
@@ -95,10 +97,18 @@ class Segmentor:
                 # for each previous segment, find similarity
                 similarity = 0
                 for j in range(1, i):
-                    sm = difflib.SequenceMatcher(None, segments[j], segments[j-1])
-                    similarity += sm.ratio()
-                similarity = similarity / j+1
+                    print("j: " + str(j))
+                    if len(segments) >= i:
+                        sm = difflib.SequenceMatcher(None, segments[j], segments[j-1])
+                        similarity += sm.ratio()
+                    else:
+                        print("For " + str(i) + " note segments, there are only " + str(len(segments)) + " segments.")
+                dict_key = str(i) + "notes"
+                self.segment_similarity_dictionary[dict_key] = similarity / (i)
                 print("Similarity for " + str(i) + " notes at a time:" + str(similarity))
+
+        print("Similarity dictionary: ")
+        print(self.segment_similarity_dictionary)
 
 
 
