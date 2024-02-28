@@ -57,13 +57,6 @@ def convert_midi_to_wav(midi_file):
     subprocess.call(["fluidsynth", "-ni", "/path/to/soundfont.sf2", midi_file, "-F", output_file])
 
 def convert_folder_of_midi_to_wav(folder_path):
-    """
-    Converts all MIDI files in a folder to WAV files.
-    
-    Args:
-        folder_path (str): The path to the folder containing MIDI files.
-        output_folder (str): The path to the output folder.
-    """
     # Iterate through MIDI files in the folder
     for file_name in os.listdir(folder_path):
         file_path = os.path.join(folder_path, file_name)
