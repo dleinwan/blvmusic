@@ -15,7 +15,8 @@ class Segmentor:
 
         # prepare midi for manipulation
         self.midi_path = midi_file_path
-        self.midi = converter.parse(self.midi_path)
+        self.midi_full_stream = converter.parse(self.midi_path)
+        self.midi = self.midi_full_stream.parts[0]
         self.notes = self.midi.flat.notes
         
         if create_folder == True:
