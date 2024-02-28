@@ -88,7 +88,7 @@ class Segmentor:
         self.best_num = 0
         for i in range(1, iter_range):
             segments = self.segment(i)
-            print("i: " + str(i))
+            # print("i: " + str(i))
             # print(repeat.RepeatFinder(segments).getSimilarMeasureGroups())
             # skip if first iteration since nothing to compare it to
             if i==1: 
@@ -97,7 +97,7 @@ class Segmentor:
                 # for each previous segment, find similarity
                 similarity = 0
                 for j in range(1, i):
-                    print("j: " + str(j))
+                    # print("j: " + str(j))
                     if len(segments) >= i:
                         sm = difflib.SequenceMatcher(None, segments[j], segments[j-1])
                         similarity += sm.ratio()

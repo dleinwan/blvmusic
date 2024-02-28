@@ -6,6 +6,9 @@
 *.mp3
 *.mid
 !mary.mid
+!mary_repeat2.mid
+!mary_repeat4.mid
+!mary_repeat8.mid
 *.png
 !mary_example.png
 clips/
