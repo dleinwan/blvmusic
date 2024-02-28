@@ -95,6 +95,7 @@ class Note:
                 Audio(name_folder_path + file)
                 print('playing')
 
+
 class Codebook:
 
     def __init__(self, file_path_to_csv):
