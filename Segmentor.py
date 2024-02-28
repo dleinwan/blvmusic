@@ -8,7 +8,7 @@ import difflib
 import itertools
 
 class Segmentor:
-    def __init__(self, midi_file_path):
+    def __init__(self, midi_file_path, create_folder):
         self.best_num = 0
         self.segments = []
         self.segment_similarity_dictionary = {}
@@ -18,15 +18,20 @@ class Segmentor:
         self.midi = converter.parse(self.midi_path)
         self.notes = self.midi.flat.notes
         
+        if create_folder == True:
         # create folder for song if it doesn't already exist
         #   ~ folder will be named the same name as input file name
-        self.output_folder_name = self.midi_path.split('.')[0]
-        if not os.path.exists(self.output_folder_name):
-            os.makedirs(self.output_folder_name)
-            print(f"Folder '{self.output_folder_name}' created.")
+            self.output_folder_name = self.midi_path.split('.')[0]
+            if not os.path.exists(self.output_folder_name):
+                os.makedirs(self.output_folder_name)
+                print(f"Folder '{self.output_folder_name}' created.")
+        # else:
+            # print(f"Folder '{self.output_folder_name}' already exists.")
+            self.output_folder_path = "./" + self.output_folder_name
         else:
-            print(f"Folder '{self.output_folder_name}' already exists.")
-        self.output_folder_path = "./" + self.output_folder_name
+            self.output_folder_name = None
+            self.output_folder_path = None
+
     
     def create_midi_from_notes(self, segment):
         midi_stream = stream.Stream()
@@ -36,6 +41,10 @@ class Segmentor:
             elif isinstance(element, note.Chord):
                 midi_stream.append(element)
         return midi_stream
+    
+    def show_midi(self):
+        midi_stream = self.create_midi_from_notes(self.notes)
+        midi_stream.show()
     
     def midi_to_note_name(self, midi_note):
         return note.Note(midi_note).nameWithOctave
@@ -101,13 +110,13 @@ class Segmentor:
                     if len(segments) >= i:
                         sm = difflib.SequenceMatcher(None, segments[j], segments[j-1])
                         similarity += sm.ratio()
-                    else:
-                        print("For " + str(i) + " note segments, there are only " + str(len(segments)) + " segments.")
+                    # else:
+                    #     print("For " + str(i) + " note segments, there are only " + str(len(segments)) + " segments.")
                 dict_key = str(i) + "notes"
                 self.segment_similarity_dictionary[dict_key] = similarity / (i)
                 # print("Similarity for " + str(i) + " notes at a time:" + str(similarity))
 
-        print("Similarity dictionary: ")
+        print("Similarity dictionary for " + self.midi_path + ": ")
         print(self.segment_similarity_dictionary)
 
 
