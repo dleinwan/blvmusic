@@ -137,14 +137,15 @@ class Segmentor:
         output_folder_path = "./" + output_folder_name
         return output_folder_name, output_folder_path
 
-    def convert_midi_to_wav(self, midi_file):
-        file_name, folder_path = self.create_folder(midi_file)
+    def convert_midi_to_wav(self):
+        file_name, folder_path = self.create_folder(self.midi_path)
         # Construct the output file path by replacing the MIDI extension with WAV extension
-        wav_file = os.path.splitext(os.path.basename(midi_file))[0] + ".wav"
+        wav_file = os.path.splitext(os.path.basename(self.midi_path))[0] + ".wav"
         output_file = os.path.join(file_name, wav_file)
         
         # Convert MIDI to WAV using fluidsynth
-        subprocess.call(["fluidsynth", "-ni", "/path/to/soundfont.sf2", midi_file, "-F", output_file])
+        # subprocess.call(["fluidsynth", "-ni", "mell_flutes.sf2", self.midi_path, "-F", output_file])
+        subprocess.call(["/usr/bin/open", "-W", "-n", "-a", "/Users/dani/opt/anaconda3/envs/cv_flute/lib/python3.11/site-packages/fluidsynth"])
 
     def convert_folder_of_midi_to_wav(self, folder_path):
         # Iterate through MIDI files in the folder

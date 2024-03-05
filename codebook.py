@@ -8,7 +8,6 @@ import os
 from scipy.io import wavfile
 from pydub import AudioSegment
 
-
 '''
 
 Class Note
