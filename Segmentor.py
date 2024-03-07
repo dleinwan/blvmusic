@@ -18,6 +18,8 @@ class Segmentor:
         self.midi_full_stream = converter.parse(self.midi_path)
         self.midi = self.midi_full_stream.parts[0]
         self.notes = self.midi.flat.notes
+
+        self.midi_output_folder_name = None
         
         if create_folder == True:
         # create folder for song if it doesn't already exist
@@ -31,7 +33,6 @@ class Segmentor:
             self.output_folder_path = "./" + self.output_folder_name
         else:
             self.output_folder_name = None
-            self.output_folder_path = None
 
     
     def create_midi_from_notes(self, segment):
@@ -54,16 +55,17 @@ class Segmentor:
         return [[self.midi_to_note_name(midi_note.pitch.midi) for midi_note in row] for row in self.segments]
     
     def save_midi(self, midi_stream, output_file):
-        output_path = os.path.join(self.output_folder_path, output_file)
+        output_path = os.path.join(self.output_folder_name, output_file)
         midi_stream.write('midi', fp=output_path)
     
     # Create MIDI streams for each segment and save them as .mid files
     def save_segments_as_midi(self):
+        self.midi_output_folder_name = "mary"
         for i, segment in enumerate(self.segments):
             midi_stream = self.create_midi_from_notes(segment)
             output_file = f"segment_{i+1}.mid"
             self.save_midi(midi_stream, output_file)
-            print(f"Segment {i+1} saved as {os.path.join(self.output_folder_path, output_file)}")
+            print(f"Segment {i+1} saved as {os.path.join(self.output_folder_name, output_file)}")
             midi_stream.show()
 
     def show_segments_as_midi(self):
@@ -127,8 +129,10 @@ class Segmentor:
     def find_similar_note_groups(self):
         return repeat.RepeatFinder(self.midi).getSimilarMeasureGroups()
 
-    def create_folder(self, file_path):
+    def create_folder(self, file_path, ext):
         output_folder_name = file_path.split('.')[0]
+        if ext != None:
+            output_folder_name = output_folder_name + ext
         if not os.path.exists(output_folder_name):
             os.makedirs(output_folder_name)
             print(f"Folder '{output_folder_name}' created.")
@@ -137,36 +141,49 @@ class Segmentor:
         output_folder_path = "./" + output_folder_name
         return output_folder_name, output_folder_path
 
-    def convert_midi_to_wav(self):
-        file_name, folder_path = self.create_folder(self.midi_path)
+    def convert_midi_to_wav(self, full_midi_file_path, midi_file_name, file_path, output_folder_name, output_folder_path):
         # Construct the output file path by replacing the MIDI extension with WAV extension
-        wav_file = os.path.splitext(os.path.basename(self.midi_path))[0] + ".wav"
-        output_file = os.path.join(file_name, wav_file)
+        wav_file = os.path.splitext(os.path.basename(file_path))[0] + ".wav"
+        output_file = os.path.join(output_folder_name, wav_file)
+        print(file_path)
         
         # Convert MIDI to WAV using fluidsynth
-        # subprocess.call(["fluidsynth", "-ni", "mell_flutes.sf2", self.midi_path, "-F", output_file])
-        subprocess.call(["/usr/bin/open", "-W", "-n", "-a", "/Users/dani/opt/anaconda3/envs/cv_flute/lib/python3.11/site-packages/fluidsynth"])
+        # /Users/dani/Projects/blvmusic/mell_flutes.sf2
+        # DEFAULT_SOUND_FONT = '~/.fluidsynth/mell_flutes.sf2'
+        default_soundfont = "/Users/dani/opt/anaconda3/envs/cv_flute/share/soundfonts/default.sf2"
+        default_soundfont_path = os.path.expanduser(default_soundfont)
+        subprocess.call(["fluidsynth", "-F", default_soundfont, full_midi_file_path, "-F", output_file])
+        # subprocess.call(["/usr/bin/open", "-W", "-n", "-a", "/Users/dani/opt/anaconda3/envs/cv_flute/lib/python3.11/site-packages/fluidsynth"])
 
-    def convert_folder_of_midi_to_wav(self, folder_path):
+    def convert_folder_of_midi_to_wav(self, input_folder_path):
+        ext = "_wav"
+        output_folder_name, output_folder_path = self.create_folder(input_folder_path, ext)
         # Iterate through MIDI files in the folder
-        for file_name in os.listdir(folder_path):
-            file_path = os.path.join(folder_path, file_name)
-            if file_name.lower().endswith('.mid') or file_name.lower().endswith('.midi'):
+        for midi_file_name in os.listdir(input_folder_path):
+            print("input folder path")
+            print(input_folder_path)
+            print("midi_file_name:")
+            print(midi_file_name)
+            full_midi_file_path = input_folder_path + "/" + midi_file_name
+            print("full_midi_file_path:")
+            print(full_midi_file_path)
+            output_file_path = os.path.join(output_folder_path, midi_file_name)
+            if midi_file_name.lower().endswith('.mid') or midi_file_name.lower().endswith('.midi'):
                 # Convert MIDI file to WAV
-                self.convert_midi_to_wav(file_path)
-
-    def create_folder(self, file_path):
-        output_folder_name = file_path.split('.')[0]
-        if not os.path.exists(output_folder_name):
-            os.makedirs(output_folder_name)
-            print(f"Folder '{output_folder_name}' created.")
-        else:
-            print(f"Folder '{output_folder_name}' already exists.")
-        output_folder_path = "./" + output_folder_name
-        return output_folder_name, output_folder_path
+                self.convert_midi_to_wav(full_midi_file_path, midi_file_name, output_file_path, output_folder_name, output_folder_path)
     
     # not needed anymore
     def parse_midi(self):
         midi = converter.parse(self.midi_path)
         notes_to_parse = midi.flat.notes
         return notes_to_parse
+    
+    # def create_folder(self, file_path):
+    #     output_folder_name = file_path.split('.')[0]
+    #     if not os.path.exists(output_folder_name):
+    #         os.makedirs(output_folder_name)
+    #         print(f"Folder '{output_folder_name}' created.")
+    #     else:
+    #         print(f"Folder '{output_folder_name}' already exists.")
+    #     output_folder_path = "./" + output_folder_name
+    #     return output_folder_name, output_folder_path

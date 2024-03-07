@@ -7,6 +7,8 @@ import csv
 import os
 from scipy.io import wavfile
 from pydub import AudioSegment
+from music21 import *
+import numpy as np
 
 '''
 
@@ -86,7 +88,7 @@ class Note:
         # append sounding pitch again
         output_audio = output_audio.append(sound_audio, crossfade=0)
         # export to output_audio folder
-        output_audio_file_name = "./output_audio/" + self.name + ".wav"
+        output_audio_file_name = "./reference_output_audio/" + self.name + ".wav"
         output_audio.export(output_audio_file_name, format="wav", bitrate=44100)
 
 '''
@@ -104,6 +106,35 @@ class Codebook:
             for row in data:
                 # print(', '.join(row))
                 self.codes.append(Note(row))
+
+    def create_scale_audio(self, tonic_note_midi_num, scale_quality):
+        # pitch_obj = pitch.Pitch(midi=midi_pitch)
+        scale_array = np.empty(8)
+        scale_array = scale_array + self.get_scale_quality_array(scale_quality) + tonic_note_midi_num
+        print(scale_array)
+
+
+    def get_scale_quality_array(self, scale_quality):
+        # major = [W, W, H, W, W, W, H]
+        # major = [2, 2, 1, 2, 2, 2, 1]
+        # major = [2, 4, 5, 7, 9, 11, 12]
+        major_array = np.array([0, 2, 4, 5, 7, 9, 11, 12])
+        # minor = [W, H, W, W, H, W, W]
+        # minor = [2, 1, 2, 2, 1, 2, 2]
+        # minor = [2, 3, 5, 7, 8, 10, 12]
+        minor_array = np.array([0, 2, 3, 5, 7, 8, 10, 12])
+        output_array = np.empty(8)
+        if scale_quality == "major" or "Major":
+            output_array = major_array
+        elif scale_quality == "minor" or "Minor":
+            output_array = minor_array
+        else:
+            output_array = None
+            print("Error. Invalid scale quality entered.")
+
+        return output_array
+
+
                 
     def print_all_notes(self):
         for item in self.codes:
@@ -149,3 +180,11 @@ class Codebook:
         return note
     
     # def stich_reference_audio(self, num_notes, param2, )
+
+    # general stitch audio
+    # type= note reference, song, scale, exercise....
+    # stitch_reference
+    # stitch_song
+    # stitch_scale(scale_name, scale_quality, num_notes_per_file, num_parameters, array_of_parameters)
+    # example:
+    # stitch_scale("C", "Major", 1, 3, [pitch, fingering, pitch])
