@@ -16,7 +16,6 @@ class Segmentor:
         self.full_stream_midi = converter.parse(self.path_to_midi)
         self.midi = self.full_stream_midi.parts[0]
         self.notes = self.midi.flat.notes
-
         
         self.path_to_main_folder = None
         self.path_to_wav_output_folder = None
@@ -41,8 +40,6 @@ class Segmentor:
         self.segments = []
         self.segment_similarity_dictionary = {}
         
-
-    
     def create_midi_from_notes(self, segment):
         midi_stream = stream.Stream()
         for element in segment:
@@ -61,10 +58,6 @@ class Segmentor:
         
     def convert_to_note_names(self):
         return [[self.midi_to_note_name(midi_note.pitch.midi) for midi_note in row] for row in self.segments]
-    
-    # def save_midi(self, midi_stream, segment_file_name):
-    #     output_path = os.path.join(self.path_to_segmented_midi, segment_file_name)
-    #     midi_stream.write('midi', fp=output_path)
     
     # Create MIDI streams for each segment and save them as .mid files
     def save_segments_as_midi(self):
@@ -91,7 +84,6 @@ class Segmentor:
             self.segments.append(segment)
         self.save_segments_as_midi()
         
-
     def segment(self, segment_length):
         self.segments = []
         for i in range(0, len(self.notes), segment_length):
@@ -133,18 +125,6 @@ class Segmentor:
     def find_similar_note_groups(self):
         return repeat.RepeatFinder(self.midi).getSimilarMeasureGroups()
 
-    def create_folder(self, file_path, ext):
-        output_folder_name = file_path.split('.')[0]
-        if ext != None:
-            output_folder_name = output_folder_name + ext
-        if not os.path.exists(output_folder_name):
-            os.makedirs(output_folder_name)
-            print(f"Folder '{output_folder_name}' created.")
-        else:
-            print(f"Folder '{output_folder_name}' already exists.")
-        output_folder_path = "./" + output_folder_name
-        return output_folder_name, output_folder_path
-
     def convert_midi_to_wav(self):
         for file in os.listdir(self.path_to_segmented_midi_folder):
             # Construct the output file path by replacing the MIDI extension with WAV extension
@@ -159,6 +139,18 @@ class Segmentor:
             default_soundfont = "/Users/dani/opt/anaconda3/envs/cv_flute/share/soundfonts/default.sf2"
             default_soundfont_path = os.path.expanduser(default_soundfont)
             subprocess.call(["fluidsynth", "-F", default_soundfont, temp_full_midi_file_path, "-F", temp_output_file_path])
+
+    # def create_folder(self, file_path, ext):
+    #     output_folder_name = file_path.split('.')[0]
+    #     if ext != None:
+    #         output_folder_name = output_folder_name + ext
+    #     if not os.path.exists(output_folder_name):
+    #         os.makedirs(output_folder_name)
+    #         print(f"Folder '{output_folder_name}' created.")
+    #     else:
+    #         print(f"Folder '{output_folder_name}' already exists.")
+    #     output_folder_path = "./" + output_folder_name
+    #     return output_folder_name, output_folder_path
 
     # def convert_folder_of_midi_to_wav(self, input_folder_path):
     #     # ext = "_wav"
@@ -178,10 +170,10 @@ class Segmentor:
     #             self.convert_midi_to_wav(full_midi_file_path, midi_file_name, output_file_path, output_folder_name, output_folder_path)
     
     # not needed anymore
-    def parse_midi(self):
-        midi = converter.parse(self.midi_path)
-        notes_to_parse = midi.flat.notes
-        return notes_to_parse
+    # def parse_midi(self):
+    #     midi = converter.parse(self.midi_path)
+    #     notes_to_parse = midi.flat.notes
+    #     return notes_to_parse
     
     # def create_folder(self, file_path):
     #     output_folder_name = file_path.split('.')[0]
