@@ -82,6 +82,7 @@ class Segmentor:
             # add the below line if you don't want to include remainder segment
             # if len(segment) == segment_length:
             self.segments.append(segment)
+        self.convert_to_note_names()
         self.save_segments_as_midi()
         
     def segment(self, segment_length):
@@ -100,7 +101,7 @@ class Segmentor:
         self.best_num = 0
         for i in range(1, iter_range):
             segments = self.segment(i)
-            # print("i: " + str(i))
+            print("i: " + str(i))
             # print(repeat.RepeatFinder(segments).getSimilarMeasureGroups())
             # skip if first iteration since nothing to compare it to
             if i==1: 
@@ -119,7 +120,7 @@ class Segmentor:
                 self.segment_similarity_dictionary[dict_key] = similarity / (i)
                 # print("Similarity for " + str(i) + " notes at a time:" + str(similarity))
 
-        print("Similarity dictionary for " + self.midi_path + ": ")
+        print("Similarity dictionary for " + self.path_to_midi + ": ")
         print(self.segment_similarity_dictionary)
 
     def find_similar_note_groups(self):
