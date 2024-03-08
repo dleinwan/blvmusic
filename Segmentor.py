@@ -6,6 +6,7 @@ import os
 import subprocess
 import difflib
 import itertools
+import numpy
 
 class Segmentor:
     def __init__(self, input_path_to_midi):
@@ -36,9 +37,11 @@ class Segmentor:
             print(f"Folder '{self.name}' created in songs/ folder.")
 
         # for analyzing similarity
-        self.best_num = 0
-        self.segments = []
+        self.best_num = None
+        self.segments = None
+        self.segments_similarity_score = None
         self.segment_similarity_dictionary = {}
+        self.similarity_matrix = numpy.zeros((50, 50))
         
     def create_midi_from_notes(self, segment):
         midi_stream = stream.Stream()
@@ -85,9 +88,9 @@ class Segmentor:
         self.convert_to_note_names()
         self.save_segments_as_midi()
         
-    def segment(self, segment_length):
+    def segment(self, segment_length, offset):
         self.segments = []
-        for i in range(0, len(self.notes), segment_length):
+        for i in range((0+offset), len(self.notes), segment_length):
             segment = self.notes[i:i+segment_length]
             # add the below line if you don't want to include remainder segment
             # if len(segment) == segment_length:
@@ -99,29 +102,36 @@ class Segmentor:
     def analyze_for_best_sectioning(self, iter_range):
         iter_range+=1
         self.best_num = 0
-        for i in range(1, iter_range):
-            segments = self.segment(i)
-            print("i: " + str(i))
+        similarity_matrix = numpy.zeros((iter_range, iter_range))
+        for i in range(2, iter_range): # skip segments of 1 and start at 2
             # print(repeat.RepeatFinder(segments).getSimilarMeasureGroups())
-            # skip if first iteration since nothing to compare it to
-            if i==1: 
-                None
-            else:
+            print("i: " + str(i))
+            for k in range(0, i):
+                segments = self.segment(i, offset=k)
+                print("k: " + str(k))
                 # for each previous segment, find similarity
                 similarity = 0
-                for j in range(1, i):
+                for j in range(1, len(segments)):
                     # print("j: " + str(j))
-                    if len(segments) >= i:
-                        sm = difflib.SequenceMatcher(None, segments[j], segments[j-1])
-                        similarity += sm.ratio()
+                    # if len(segments) >= i:
+                    sm = difflib.SequenceMatcher(None, segments[j], segments[j-1])
+                    similarity += sm.ratio()
                     # else:
                     #     print("For " + str(i) + " note segments, there are only " + str(len(segments)) + " segments.")
                 dict_key = str(i) + "notes"
-                self.segment_similarity_dictionary[dict_key] = similarity / (i)
+                self.segments_similarity_score = similarity / len(segments)
+                self.segment_similarity_dictionary[dict_key] = similarity / len(segments)
+                similarity_matrix[i][k] =  self.segments_similarity_score
                 # print("Similarity for " + str(i) + " notes at a time:" + str(similarity))
 
         print("Similarity dictionary for " + self.path_to_midi + ": ")
         print(self.segment_similarity_dictionary)
+        for row in similarity_matrix:
+            for element in row:
+                formatted = '{:.2f}'.format(element)
+                print(formatted, end=" ")
+            print()
+        # print(similarity_matrix)
 
     def find_similar_note_groups(self):
         return repeat.RepeatFinder(self.midi).getSimilarMeasureGroups()
